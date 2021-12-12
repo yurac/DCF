@@ -98,6 +98,8 @@ def ulFCF(ebit, tax_rate, non_cash_charges, cwc, cap_ex):
     returns:
         unlevered free cash flow
     """
+    # Why adding cwc and cap_ex? Seems like these should be subtracted.
+    # See https://www.investopedia.com/terms/u/unlevered-free-cash-flow-ufcf.asp
     return ebit * (1-tax_rate) + non_cash_charges + cwc + cap_ex
 
 
@@ -166,6 +168,7 @@ def enterprise_value(income_statement, cashflow_statement, balance_statement, pe
     for yr in range(1, period+1):    
 
         # increment each value by growth rate
+        # Why multiplied and not compounded using power?
         ebit = ebit * (1 + (yr * earnings_growth_rate))
         non_cash_charges = non_cash_charges * (1 + (yr * earnings_growth_rate))
         cwc = cwc * 0.7                             # TODO: evaluate this cwc rate? 0.1 annually?
@@ -173,6 +176,7 @@ def enterprise_value(income_statement, cashflow_statement, balance_statement, pe
 
         # discount by WACC
         flow = ulFCF(ebit, tax_rate, non_cash_charges, cwc, cap_ex)
+        # PV = Present value
         PV_flow = flow/((1 + discount)**yr)
         flows.append(PV_flow)
 
